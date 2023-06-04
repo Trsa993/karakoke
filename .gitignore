@@ -1,0 +1,9 @@
+_pycache_
+venv/
+backend/venv/
+backend/*.log
+backend/.env
+
+frontend/node_modules/
+frontend/build/
+frontend/.env
