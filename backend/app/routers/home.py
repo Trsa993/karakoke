@@ -7,6 +7,7 @@ from ..database import get_db
 
 router = APIRouter()
 
+
 @router.get("/home", response_model=schemas.HomeOut)
 async def home(user_id: int = Depends(oauth2.require_user), db: Session = Depends(get_db)):
     latest_songs = (
@@ -51,8 +52,8 @@ async def home(user_id: int = Depends(oauth2.require_user), db: Session = Depend
         .all()
     )
 
-    most_listened_artists  = (
-    db.query(models.Artist)
+    most_listened_artists = (
+        db.query(models.Artist)
         .join(models.UserPreference, models.Artist.id == models.UserPreference.artist_id, isouter=True)
         .filter(models.UserPreference.user_id == user_id)
         .filter(~models.Artist.id.in_([artist.id for artist in latest_artists]))

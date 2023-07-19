@@ -6,8 +6,9 @@ from ..database import get_db
 
 router = APIRouter()
 
+
 @router.get("/search", response_model=schemas.SearchResult)
-async def search(query: str, user_id: int = Depends(oauth2.require_user), db: Session = Depends(get_db)):
+async def search(query: str, db: Session = Depends(get_db)):
     artists = (
         db.query(models.Artist)
         .filter(models.Artist.artist.ilike(f"%{query}%"))

@@ -1,8 +1,7 @@
 import os
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 SQLALCHEMY_DATABASE_URL = f"postgresql://postgres:password@localhost:5432/karaoke-web"
 
@@ -81,7 +80,7 @@ def process_artist_folder(artist_folder, session, base_url):
     artist_image_path = os.path.join(artist_folder, "artist_image.jpg").replace('\\', '/')
 
     # Replace the local path with the base URL
-    artist_image_url = artist_image_path.replace('D:/Pesme za karaoke/Karaoke', base_url)
+    artist_image_url = artist_image_path.replace('D:/Milos/Pesme za karaoke/Karaoke', base_url)
 
     artist = session.query(Artist).filter(Artist.artist == artist_name).first()
 
@@ -101,9 +100,9 @@ def process_song_folder(artist_id, song_folder, session, base_url):
     accompaniments_path = os.path.join(song_folder, "no_vocals.mp3").replace('\\', '/')
     text_path = os.path.join(song_folder, "text.json").replace('\\', '/')
 
-    vocals_url = vocals_path.replace('D:/Pesme za karaoke/Karaoke', base_url)
-    accompaniments_url = accompaniments_path.replace('D:/Pesme za karaoke/Karaoke', base_url)
-    text_url = text_path.replace('D:/Pesme za karaoke/Karaoke', base_url)
+    vocals_url = vocals_path.replace('D:/Milos/Pesme za karaoke/Karaoke', base_url)
+    accompaniments_url = accompaniments_path.replace('D:/Milos/Pesme za karaoke/Karaoke', base_url)
+    text_url = text_path.replace('D:/Milos/Pesme za karaoke/Karaoke', base_url)
 
     song = session.query(Song).filter(Song.title == song_name, Song.artist_id == artist_id).first()
 
@@ -119,7 +118,7 @@ def process_song_folder(artist_id, song_folder, session, base_url):
         session.commit()
 
 def main():
-    karaoke_folder = "D:\\Pesme za karaoke\\Karaoke"
+    karaoke_folder = "D:\\Milos\\Pesme za karaoke\\Karaoke"
     base_url = "http://127.0.0.1:8887"
 
     with get_db() as session:

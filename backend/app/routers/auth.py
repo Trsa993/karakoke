@@ -19,6 +19,7 @@ router = APIRouter(
 )
 
 oauth = OAuth()
+
 oauth.register(
     name="google",
     client_id=settings.google_client_id,
@@ -159,6 +160,7 @@ def refresh_token(Authorize: oauth2.AuthJWT = Depends(), db: Session = Depends(g
             .filter(models.User.id == user_id)
             .first()
         )
+
         if not user:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                                 detail="The user belonging to this token no logger exist")

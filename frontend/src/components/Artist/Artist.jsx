@@ -1,15 +1,11 @@
-import React from "react";
-import "./Artist.css";
-
 const Artist = ({ artist }) => {
   return (
-    <div className="artist">
+    <div>
       <img src={artist.image_path} alt={artist.artist} />
-      <div className="artist-info">
+      <div>
         <h3>{artist.artist}</h3>
       </div>
     </div>
   );
 };
-
 export default Artist;
