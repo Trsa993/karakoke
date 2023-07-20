@@ -39,6 +39,7 @@ class Song(Base):
     vocals_path = Column(String, nullable=False, unique=True)
     accompaniments_path = Column(String, nullable=False, unique=True)
     text_path = Column(String, nullable=False, unique=True)
+    total_listeners = Column(Integer, nullable=False, default=0)
 
     artist = relationship("Artist")
     listeners = relationship("UserPreference", back_populates="song")

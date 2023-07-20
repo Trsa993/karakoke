@@ -30,6 +30,7 @@ async def listen_song(song_id: int, user_id: int = Depends(oauth2.require_user),
         preference.listen_count += 1
         preference.listened_at = text("now()")
     else:
+        song.total_listeners += 1
         preference = models.UserPreference(user_id=user_id, artist_id=artist_id, song_id=song_id, listen_count=1)
         db.add(preference)
 

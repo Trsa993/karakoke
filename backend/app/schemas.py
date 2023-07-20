@@ -7,7 +7,7 @@ from pydantic import BaseModel, EmailStr, constr
 class UserCreate(BaseModel):
     email: EmailStr
     password: constr(min_length=5)
-    passwordConfirm: str
+    confirm_password: str
     profile_name: constr(min_length=2)
 
 
@@ -47,6 +47,7 @@ class SongBase(BaseModel):
     vocals_path: str
     accompaniments_path: str
     text_path: str
+    total_listeners: int
 
     class Config:
         orm_mode = True

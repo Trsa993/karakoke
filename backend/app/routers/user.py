@@ -21,11 +21,11 @@ async def create_user(payload: schemas.UserCreate, db: Session = Depends(get_db)
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail=f"User with email {user.email} already exist")
     
-    if payload.password != payload.passwordConfirm:
+    if payload.password != payload.confirm_password:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
                             detail='Passwords do not match')
 
-    del payload.passwordConfirm
+    del payload.confirm_password
 
     hashed_password = utils.hash(payload.password)
     payload.password = hashed_password
