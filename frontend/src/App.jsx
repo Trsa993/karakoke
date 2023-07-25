@@ -3,8 +3,7 @@ import Navigation from "./components/Navigation/Navigation";
 import Home from "./components/Home/Home";
 
 function App() {
-  const isLoggedIn = false; // Replace this with your actual login status
-
+  const isLoggedIn = false;
   return (
     <Router>
       <Navigation isLoggedIn={isLoggedIn} />
