@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
-import api from "../../api";
-import Song from "../Song/Song";
-import Artist from "../Artist/Artist";
+import Song from "./Song";
+import Artist from "./Artist";
+import useApiPrivate from "../hooks/useApiPrivate";
+import { useGlobalContext } from "./GlobalProvider";
 
-const Home = ({ isLoggedIn }) => {
+const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const apiPrivate = useApiPrivate();
+  const profileName = localStorage.getItem("profileName");
+  const { auth } = useGlobalContext();
 
   const [homeData, setHomeData] = useState({
     home_songs: [],
@@ -13,9 +17,9 @@ const Home = ({ isLoggedIn }) => {
   });
   useEffect(() => {
     const fetchData = async () => {
-      const endpoint = isLoggedIn ? "/home" : "/home/guest";
+      const endpoint = profileName ? "/home" : "/home/guest";
       try {
-        const response = await api.get(endpoint);
+        const response = await apiPrivate.get(endpoint);
         setHomeData(response.data);
       } catch (error) {
         console.log(error.response);
@@ -24,7 +28,7 @@ const Home = ({ isLoggedIn }) => {
       setIsLoading(false);
     };
     fetchData();
-  }, [isLoggedIn]);
+  }, [auth, profileName]);
 
   if (isLoading) {
     return <h2>Loading...</h2>;

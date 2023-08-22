@@ -1,8 +1,8 @@
 from datetime import timedelta
 from authlib.integrations.starlette_client import OAuth
+from authlib.integrations.base_client.errors import MismatchingStateError
 
-from fastapi import (APIRouter, Depends, HTTPException, Request, Response,
-                     status)
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -12,6 +12,7 @@ from ..config import settings
 from ..database import get_db
 
 ACCESS_TOKEN_EXPIRES_IN = settings.access_token_expires_in
+REFRESH_TOKEN_EXPIRES_IN = settings.refresh_token_expires_in
 
 
 router = APIRouter(
@@ -38,8 +39,22 @@ async def login(request: Request):
 
 @router.get("/auth/google")
 async def auth_via_google(request: Request, db: Session = Depends(get_db), Authorize: oauth2.AuthJWT = Depends()):
-    token = await oauth.google.authorize_access_token(request)
+
+    try:
+        token = await oauth.google.authorize_access_token(request)
+    except MismatchingStateError:
+        print(MismatchingStateError.description)
+        return RedirectResponse("http://localhost:3000/")
+
     userinfo = token["userinfo"]
+
+    if not await oauth2.verify_google_token(
+            id_token=token["id_token"],
+            audience=settings.google_client_id,
+            issuer=["https://accounts.google.com", "accounts.google.com"],
+            access_token=token["access_token"]):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Invalid login")
 
     email = userinfo.get("email")
     profile_name = userinfo.get("name")
@@ -60,12 +75,16 @@ async def auth_via_google(request: Request, db: Session = Depends(get_db), Autho
     access_token = Authorize.create_access_token(
         subject=str(user.id), expires_time=timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN))
     refresh_token = Authorize.create_refresh_token(
-        subject=str(user.id), expires_time=False)
+        subject=str(user.id), expires_time=timedelta(minutes=REFRESH_TOKEN_EXPIRES_IN))
 
-    Authorize.set_access_cookies(access_token)
-    Authorize.set_refresh_cookies(refresh_token)
+    redirect_url = f"http://localhost:3000/oauth-recall?access_token={access_token}&profile_name={profile_name}"
+    redirect_ressponse = RedirectResponse(url=redirect_url)
 
-    return {"access_token": access_token, "refresh_token": refresh_token}
+    Authorize.set_refresh_cookies(
+        refresh_token, response=redirect_ressponse, max_age=REFRESH_TOKEN_EXPIRES_IN * 60
+    )
+
+    return redirect_ressponse
 
 oauth.register(
     name="facebook",
@@ -90,9 +109,12 @@ async def login(request: Request):
 async def auth_via_facebook(request: Request, db: Session = Depends(get_db), Authorize: oauth2.AuthJWT = Depends()):
     token = await oauth.facebook.authorize_access_token(request)
 
+    print(token)
+
     response = await oauth.facebook.get("https://graph.facebook.com/me?fields=id,name,email", token=token)
 
     userinfo = response.json()
+    print(userinfo)
 
     email = userinfo.get("email")
     profile_name = userinfo.get("name")
@@ -113,12 +135,16 @@ async def auth_via_facebook(request: Request, db: Session = Depends(get_db), Aut
     access_token = Authorize.create_access_token(
         subject=str(user.id), expires_time=timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN))
     refresh_token = Authorize.create_refresh_token(
-        subject=str(user.id), expires_time=False)
+        subject=str(user.id), expires_time=timedelta(minutes=REFRESH_TOKEN_EXPIRES_IN))
 
-    Authorize.set_access_cookies(access_token)
-    Authorize.set_refresh_cookies(refresh_token)
+    redirect_url = f"http://localhost:3000/oauth-recall?access_token={access_token}&profile_name={profile_name}"
+    redirect_ressponse = RedirectResponse(url=redirect_url)
 
-    return {"access_token": access_token, "refresh_token": refresh_token}
+    Authorize.set_refresh_cookies(
+        refresh_token, response=redirect_ressponse, max_age=REFRESH_TOKEN_EXPIRES_IN * 60
+    )
+
+    return redirect_ressponse
 
 
 @router.post("/login")
@@ -130,20 +156,25 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session =
     )
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Invalid Credentials")
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Credentials")
     if not utils.verify(user_credentials.password, user.password):
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Invalid Credentials")
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Credentials")
 
     access_token = Authorize.create_access_token(
         subject=str(user.id), expires_time=timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN))
     refresh_token = Authorize.create_refresh_token(
-        subject=str(user.id), expires_time=False)
+        subject=str(user.id), expires_time=timedelta(minutes=REFRESH_TOKEN_EXPIRES_IN))
 
-    Authorize.set_access_cookies(access_token)
-    Authorize.set_refresh_cookies(refresh_token)
+    if user_credentials.scopes[0].split(":")[1] == "true":
+        refresh_token_max_age = REFRESH_TOKEN_EXPIRES_IN * 60
+    else:
+        refresh_token_max_age = None
 
-    return {"access_token": access_token, "refresh_token": refresh_token}
+    Authorize.set_refresh_cookies(
+        refresh_token, max_age=refresh_token_max_age)
+
+    return {"access_token": access_token, "profile_name": user.profile_name}
 
 
 @router.get("/refresh")
@@ -176,27 +207,16 @@ def refresh_token(Authorize: oauth2.AuthJWT = Depends(), db: Session = Depends(g
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=error)
 
-    Authorize.set_access_cookies(access_token)
-
     return {"access_token": access_token}
-
-
-@router.get("/is-logged-in")
-def is_logged_in(Authorize: oauth2.AuthJWT = Depends()):
-    try:
-        Authorize.jwt_required()
-    except Exception as e:
-        return {"is_logged_in": False}
-
-    return {"is_logged_in": True}
 
 
 @router.get("/logout")
 def logout(request: Request, Authorize: oauth2.AuthJWT = Depends(), user_id: int = Depends(oauth2.require_user)):
-    response = RedirectResponse(url="/home/guest")
 
-    Authorize.unset_jwt_cookies(response=response)
+    Authorize.jwt_required()
+
+    Authorize.unset_jwt_cookies()
 
     request.session.clear()
 
-    return response
+    return {"message": "Successfully logged out"}

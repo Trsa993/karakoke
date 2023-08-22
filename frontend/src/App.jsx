@@ -1,16 +1,28 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Navigation from "./components/Navigation/Navigation";
-import Home from "./components/Home/Home";
+import Home from "./components/Home";
+import Layout from "./components/Layout";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import RequireAuth from "./components/RequireAuth";
+import PersistLogin from "./components/PersistLogin";
+import AleradyAuth from "./components/AlreadyAuth";
+import OAuthRedirectHandler from "./components/OAuthRedirectHandler";
 
 function App() {
-  const isLoggedIn = false;
   return (
     <Router>
-      <Navigation isLoggedIn={isLoggedIn} />
       <Routes>
-        <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
-        <Route path="/home" element={<Home isLoggedIn={isLoggedIn} />} />
-        <Route path="/home/guest" element={<Home isLoggedIn={isLoggedIn} />} />
+        <Route element={<PersistLogin />}>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+          </Route>
+          <Route element={<RequireAuth />}></Route>
+        </Route>
+        <Route path="/oauth-recall" element={<OAuthRedirectHandler />} />
+        <Route element={<AleradyAuth />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
       </Routes>
     </Router>
   );

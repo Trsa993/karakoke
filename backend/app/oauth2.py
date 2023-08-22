@@ -1,4 +1,7 @@
 import base64
+import httpx
+from jose import jwt, JWTError, ExpiredSignatureError
+from jose.exceptions import JWTClaimsError
 from typing import List
 
 from fastapi import Depends, HTTPException, status, Cookie
@@ -10,6 +13,9 @@ from sqlalchemy.orm import Session
 from . import models
 from .config import settings
 from .database import get_db
+
+
+DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
 
 class Settings(BaseModel):
@@ -55,3 +61,34 @@ def require_user(db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
                             detail='Could not validate credentials')
 
     return user_id
+
+
+async def verify_google_token(id_token: str, audience: str, issuer: List, access_token: str):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(DISCOVERY_URL)
+        data = response.json()
+
+    jwks_uri = data['jwks_uri']
+    async with httpx.AsyncClient() as client:
+        response = await client.get(jwks_uri)
+        jwks = response.json()
+
+    try:
+        kid = jwt.get_unverified_header(id_token)["kid"]
+
+        public_keys = [k for k in jwks["keys"] if k["kid"] == kid]
+
+        if public_keys:
+            public_key = public_keys[0]
+        else:
+            return HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid login")
+
+        payload = jwt.decode(token=id_token, key=public_key, algorithms=[
+            "RS256"], audience=audience, issuer=issuer, access_token=access_token)
+
+        if payload:
+            return True
+
+    except (JWTError, ExpiredSignatureError, JWTClaimsError):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Invalid login")

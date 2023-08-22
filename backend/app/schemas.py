@@ -8,7 +8,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: constr(min_length=5)
     confirm_password: str
-    profile_name: constr(min_length=2)
+    profile_name: constr(min_length=3)
 
 
 class UserOut(BaseModel):

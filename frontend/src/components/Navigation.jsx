@@ -1,14 +1,18 @@
+import homeIcon from "../assets/home-icon.png";
 import { useNavigate } from "react-router-dom";
-import homeIcon from "../../assets/home-icon.png";
 import { useState, useEffect } from "react";
-import api from "../../api";
+import useLogout from "../hooks/useLogout";
+import { api } from "../api";
 
-const Navigation = ({ isLoggedIn }) => {
+const Navigation = () => {
   const navigateTo = useNavigate();
+  const logout = useLogout();
 
-  const handleHomeClick = () => {
-    const endpoint = isLoggedIn ? "/home" : "/home/guest";
-    navigateTo(endpoint);
+  const profileName = localStorage.getItem("profileName");
+
+  const signOut = async () => {
+    await logout();
+    navigateTo("/");
   };
 
   const [query, setQuery] = useState("");
@@ -36,13 +40,29 @@ const Navigation = ({ isLoggedIn }) => {
   }, [query]);
 
   return (
-    <nav>
-      <img src={homeIcon} alt="home-icon" onClick={handleHomeClick} />
+    <nav className="flex">
+      <img
+        className="object-contain h-16 w-16 bg-red-700 hover:bg-sky-700"
+        src={homeIcon}
+        alt="home-icon"
+        onClick={() => navigateTo("/")}
+      />
       <input
+        className=""
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
+      <div>
+        {profileName ? (
+          <div>
+            <p>{profileName}</p>
+            <button onClick={signOut}>Sign Out</button>
+          </div>
+        ) : (
+          <button onClick={() => navigateTo("/login")}>Sign In</button>
+        )}
+      </div>
     </nav>
   );
 };
