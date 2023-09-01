@@ -20,6 +20,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [showPwd, setShowPwd] = useState(false);
+  const [pwdFocus, setPwdFocus] = useState(false);
   const [errMsg, setErrMsg] = useState("");
 
   useEffect(() => {
@@ -63,9 +64,15 @@ const Login = () => {
         setErrMsg("Login Failed");
       }
       setPwd("");
-      errRef.current.focus();
     }
   };
+
+  useEffect(() => {
+    if (errMsg && errRef.current) {
+      errRef.current.focus();
+      errRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [errMsg]);
 
   const handleGoogleLogin = async () => {
     window.location.href = "http://localhost:8000/login/google";
@@ -88,7 +95,7 @@ const Login = () => {
   }, [persist]);
 
   return (
-    <div className="bg-slate-800 min-h-screen min-w-fit overflow-x-hidden text-white">
+    <div className="bg-slate-800 min-h-screen max-h-screen overflow-x-hidden text-white overflow-y-auto scrollbar-thin scrollbar-track-slate-800 scrollbar-thumb-slate-100">
       <div className="bg-slate-900 h-16 flex items-center">
         <Link to="/">
           <h1 className="text-3xl font-sans ml-8">🎤 Karakoke</h1>
@@ -102,7 +109,6 @@ const Login = () => {
           <div className="w-96 flex flex-col -sm:w-full">
             <div
               ref={errRef}
-              aria-live="assertive"
               className="flex items-center space-x-2 bg-red-600 mb-2 text-xl"
             >
               {errMsg ? (
@@ -131,7 +137,11 @@ const Login = () => {
               <label className="text-xl mb-1 mt-2" htmlFor="password">
                 Password:
               </label>
-              <div className="flex justify-between items-center border-2 border-gray-700 rounded-md bg-slate-800 focus-within:border-white">
+              <div
+                className={`flex justify-between items-center border-2 border-gray-700 rounded-md bg-slate-800 ${
+                  pwdFocus ? "focus-within:border-white" : ""
+                }`}
+              >
                 <input
                   className="pl-2 h-12 border-0 bg-transparent w-full focus:outline-none focus:ring-0"
                   type={showPwd ? "text" : "password"}
@@ -140,14 +150,20 @@ const Login = () => {
                   onChange={(e) => setPwd(e.target.value)}
                   value={pwd}
                   required
+                  onFocus={() => setPwdFocus(true)}
+                  onBlur={() => setPwdFocus(false)}
                 />
-                <button type="button" className="px-3" onClick={toggleShowPwd}>
+                <button
+                  type="button"
+                  className="px-3 focus:outline-none focus:ring-0 custom-focus-border"
+                  onClick={toggleShowPwd}
+                >
                   {showPwd ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
               <div className="my-2 ml-1 flex items-center">
                 <input
-                  className="w-4 h-4 border border-gray-700 rounded bg-slate-800 focus:ring-0 focus:ring-offset-0 hover:border-white hover:border-2 checked:hover:border-white checked:hover:border-2 "
+                  className="w-4 h-4 border border-gray-700 rounded bg-slate-800 focus:ring-white focus:ring-offset-0 hover:border-white hover:border-2 checked:hover:border-white checked:hover:border-1"
                   type="checkbox"
                   id="persist"
                   onChange={togglePersist}

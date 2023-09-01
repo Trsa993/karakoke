@@ -12,7 +12,3 @@ export const apiPrivate = axios.create({
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
-
-export const apiGoogle = axios.create({
-  baseURL: "http://127.0.0.1:8000",
-});

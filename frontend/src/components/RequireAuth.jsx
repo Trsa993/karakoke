@@ -1,11 +1,10 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
-import { useGlobalContext } from "./GlobalProvider";
 
 const RequireAuth = () => {
-  const { auth } = useGlobalContext();
   const location = useLocation();
+  const profileName = localStorage.getItem("profileName");
 
-  return auth?.email ? (
+  return profileName ? (
     <Outlet />
   ) : (
     <Navigate to="/login" state={{ from: location }} replace />

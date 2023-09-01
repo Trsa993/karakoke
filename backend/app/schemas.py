@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, EmailStr, constr
 
@@ -28,7 +28,9 @@ class UserLogin(BaseModel):
 
 class ArtistBase(BaseModel):
     artist: str
-    image_path: str
+    artist_image_large_path: str
+    artist_image_medium_path: Optional[str] = None
+    artist_image_small_path: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -48,6 +50,7 @@ class SongBase(BaseModel):
     accompaniments_path: str
     text_path: str
     total_listeners: int
+    length: str
 
     class Config:
         orm_mode = True
@@ -63,6 +66,8 @@ class Song(SongBase):
 class ArtistOut(BaseModel):
     artist: Artist
     artist_songs: List[Song]
+    artist_summary: Optional[str] = None
+    dominant_color: str
 
 
 class SongOut(Song):
@@ -77,3 +82,7 @@ class HomeOut(BaseModel):
 class SearchResult(BaseModel):
     artists: List[Artist]
     songs: List[SongOut]
+
+
+class UpdateDB(BaseModel):
+    password: str

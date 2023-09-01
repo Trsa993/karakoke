@@ -2,11 +2,11 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    database_port: str
-    database_password: str
-    database_username: str
-    database_name: str
-    database_hostname: str
+    postgres_port: str
+    postgres_password: str
+    postgres_user: str
+    postgres_db: str
+    postgres_hostname: str
 
     jwt_public_key: str
     jwt_private_key: str
@@ -18,8 +18,13 @@ class Settings(BaseSettings):
     google_client_secret: str
     facebook_app_id: str
     facebook_app_secret: str
+    last_fm_api_key: str
 
     secret_key: str
+
+    password_update_db: str
+
+    base_data_path: str
 
     class Config:
         env_file = ".env"

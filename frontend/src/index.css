@@ -1,3 +1,209 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.custom-focus-border {
+    position: relative;
+  }
+  
+  .custom-focus-border:focus::after {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 25%; 
+    right: 25%; 
+    height: 2px; 
+    background-color: white;
+  }
+
+/* @property --srsc {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #1e293b;
+}
+
+
+@keyframes searchFadeIn {
+  0% {
+    --srsc: #1e293b;
+  }
+
+  100% {
+    --srsc: #f1f5f9;
+  }
+}
+
+@keyframes searchFadeOut {
+  0% {
+    --srsc: #f1f5f9;
+  }
+
+  100% {
+    --srsc: #1e293b;
+  }
+}
+
+.search-scroll {
+  animation: searchFadeOut .5s ease-in-out forwards;
+}
+
+.search-scroll:hover {
+  animation: searchFadeIn 0s ease-in-out forwards;
+} */
+
+.search-scroll::-webkit-scrollbar {
+  background: #1e293b;
+  width: 6px;
+}
+
+.search-scroll::-webkit-scrollbar-thumb {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+@property --mainsc {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #1e293b;
+}
+
+@keyframes mainFadeIn {
+  0% {
+    --mainsc: #0f172a;
+  }
+
+  100% {
+    --mainsc: #f1f5f9;
+  }
+}
+
+@keyframes mainFadeOut {
+  0% {
+    --mainsc: #f1f5f9;
+  }
+
+  100% {
+    --mainsc: #0f172a;
+  }
+}
+
+
+@property --mainscbg {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #0f172a;
+}
+
+@keyframes mainFadeInBg {
+  0% {
+    --mainscbg: #0f172a;
+  }
+
+  100% {
+    --mainscbg: #1e293b;
+  }
+}
+
+@keyframes mainFadeOutBg {
+  0% {
+    --mainscbg: #1e293b;
+  }
+
+  100% {
+    --mainscbg: #0f172a;
+  }
+}
+
+.main-scroll-animation {
+  animation-name: mainFadeOut, mainFadeOutBg;
+  animation-duration: 5s, 5s;
+  animation-timing-function: ease-out, ease-out;
+  animation-fill-mode: forwards, forwards;
+}
+
+.main-scroll-animation:hover {
+  animation-name: mainFadeIn, mainFadeInBg;
+  animation-duration: 0s, 0s;
+  animation-timing-function: ease-in, ease-in;
+  animation-fill-mode: forwards, forwards;
+}
+
+.main-scroll-animation::-webkit-scrollbar {
+  background: var(--mainscbg);
+  width: 8px;
+}
+
+.main-scroll-animation::-webkit-scrollbar-thumb {
+  background: var(--mainsc);
+  border-radius: 2px;
+}
+
+.song-hover-transition {
+  transition: transform 200ms, opacity 500ms;
+}
+
+.summary-link a {
+  @apply underline underline-offset-2
+}
+
+button {
+  @apply outline-none focus:outline-none
+}
+
+
+input[type="range"] {
+  -webkit-appearance: none;
+   appearance: none;
+   cursor: pointer;
+   border-radius: 8px;
+   height: 8px;
+   background: linear-gradient(90deg, white var(--percentage), #64748b var(--percentage));
+}
+
+input[type="range"]:hover {
+
+   background: linear-gradient(90deg, #1e293b var(--percentage), #64748b var(--percentage));
+}
+
+input[type="range"]:focus {
+ outline: none;
+}
+
+/***** Chrome, Safari, Opera and Edge Chromium styles *****/
+input[type="range"]::-webkit-slider-thumb {
+ -webkit-appearance: none; 
+  appearance: none;
+}
+
+input[type="range"]:hover::-webkit-slider-thumb {
+   background-color: white;
+   height: 14px;
+   width: 14px;
+   border-radius: 50%;
+ }
+
+ 
+/******** Firefox styles ********/
+
+input[type="range"]::-moz-range-track {
+  background-color: #053a5f;
+  border-radius: 0.5rem;
+  height: 0.5rem;
+}
+
+
+input[type="range"]::-moz-range-thumb {
+  border: none; 
+  border-radius: 0; 
+
+
+  background-color: #5cd5eb;
+  height: 2rem;
+  width: 1rem;
+}
+
+input[type="range"]:focus::-moz-range-thumb {
+ border: 1px solid #053a5f;
+ outline: 3px solid #053a5f;
+ outline-offset: 0.125rem; 
+}

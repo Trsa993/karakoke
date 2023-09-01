@@ -24,7 +24,9 @@ class Artist(Base):
 
     id = Column(Integer, primary_key=True, nullable=False)
     artist = Column(String, nullable=False, unique=True)
-    image_path = Column(String, nullable=False, unique=True)
+    artist_image_large_path = Column(String, nullable=False, unique=True)
+    artist_image_medium_path = Column(String, nullable=True, unique=True)
+    artist_image_small_path = Column(String, nullable=True, unique=True)
 
     listeners = relationship("UserPreference", back_populates="artist")
 
@@ -40,6 +42,7 @@ class Song(Base):
     accompaniments_path = Column(String, nullable=False, unique=True)
     text_path = Column(String, nullable=False, unique=True)
     total_listeners = Column(Integer, nullable=False, default=0)
+    length = Column(String, nullable=False)
 
     artist = relationship("Artist")
     listeners = relationship("UserPreference", back_populates="song")

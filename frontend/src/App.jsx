@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./components/Home";
+import ArtistSongs from "./components/ArtistSongs";
+import KaraokeScreen from "./components/KaraokeScreen";
 import Layout from "./components/Layout";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -15,8 +17,11 @@ function App() {
         <Route element={<PersistLogin />}>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/artists/:artistId" element={<ArtistSongs />} />
+            <Route element={<RequireAuth />}>
+              <Route path="/songs/:songId" element={<KaraokeScreen />} />
+            </Route>
           </Route>
-          <Route element={<RequireAuth />}></Route>
         </Route>
         <Route path="/oauth-recall" element={<OAuthRedirectHandler />} />
         <Route element={<AleradyAuth />}>

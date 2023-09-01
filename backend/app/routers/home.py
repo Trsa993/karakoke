@@ -47,7 +47,7 @@ async def home(user_id: int = Depends(oauth2.require_user), db: Session = Depend
         .filter(models.UserPreference.user_id == user_id)
         .group_by(models.Artist.id)
         .order_by(func.max(models.UserPreference.listened_at).desc())
-        .limit(5)
+        .limit(20)
         .with_entities(models.Artist)
         .all()
     )
@@ -59,14 +59,14 @@ async def home(user_id: int = Depends(oauth2.require_user), db: Session = Depend
         .filter(~models.Artist.id.in_([artist.id for artist in latest_artists]))
         .group_by(models.Artist.id)
         .order_by(func.sum(models.UserPreference.song_id).desc())
-        .limit(15)
+        .limit(40)
         .with_entities(models.Artist)
         .all()
     )
 
     home_artists = latest_artists + most_listened_artists
 
-    num_remaining_artists = 20 - len(home_artists)
+    num_remaining_artists = 60 - len(home_artists)
     if num_remaining_artists > 0:
         remaining_artists = (
             db.query(models.Artist)
@@ -89,7 +89,7 @@ async def home(db: Session = Depends(get_db)):
     home_artists = (
         db.query(models.Artist)
         .order_by(func.random())
-        .limit(20)
+        .limit(60)
         .all())
 
     return schemas.HomeOut(home_songs=home_songs, home_artists=home_artists)

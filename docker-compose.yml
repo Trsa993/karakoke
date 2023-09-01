@@ -7,14 +7,16 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./backend:/app
+      - ./backend:/app:ro
+      - "D:/Milos/Pesme za karaoke/Karaoke:/karaoke_data:ro"
     env_file:
       - ./backend/.env
     environment:
-      - DATABASE_HOSTNAME=db
+      - POSTGRES_HOSTNAME=db
     command: bash -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     depends_on:
       - db
+      - redis-cache
   frontend:
     build: 
       context: ./frontend
@@ -23,15 +25,39 @@ services:
       - 3000:3000
     volumes:
       - /app/node_modules
-      - ./frontend:/app
+      - type: bind
+        source: ./frontend
+        target: /app
+    env_file:
+      - ./frontend/.env
     depends_on:
       - backend
+  nginx:
+    image: nginx:latest
+    ports:
+      - 8080:80
+    volumes:
+      - "D:/Milos/Pesme za karaoke/Karaoke:/usr/share/nginx/html:ro"
+      - ./nginx-config/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
   db:
     image: postgres
     env_file:
       - ./backend/.env
+    environment:
+      - name=value
     volumes:
       - postgres-db:/var/lib/postgresql/data
+  redis-cache:
+    image: redis:latest
+    restart: on-failure
+    ports:
+      - 6379:6379
+    volumes:
+      - cache:/data
 
 volumes:
   postgres-db:
+  cache:

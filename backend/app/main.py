@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-from .routers import artist, auth, home, search, song, user
+from .routers import artist, auth, home, search, song, user, update_db
 from .config import settings
 
 app = FastAPI()
@@ -26,3 +26,4 @@ app.include_router(home.router)
 app.include_router(search.router)
 app.include_router(song.router)
 app.include_router(user.router)
+app.include_router(update_db.router)

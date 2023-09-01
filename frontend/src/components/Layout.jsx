@@ -3,9 +3,11 @@ import Navigation from "./Navigation";
 
 const Layout = () => {
   return (
-    <div>
-      <Navigation />
-      <main>
+    <div className="font-mono">
+      <nav className="sticky top-0 z-10">
+        <Navigation />
+      </nav>
+      <main className="bg-slate-600 flex flex-col items-center p-2 -sm:p-0">
         <Outlet />
       </main>
     </div>

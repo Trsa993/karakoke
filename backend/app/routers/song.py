@@ -7,7 +7,8 @@ from ..database import get_db
 
 router = APIRouter()
 
-@router.post("/songs/{song_id}/listen", response_model=schemas.SongOut)
+
+@router.get("/songs/{song_id}/listen", response_model=schemas.SongOut)
 async def listen_song(song_id: int, user_id: int = Depends(oauth2.require_user), db: Session = Depends(get_db)):
     song = (
         db.query(models.Song)
@@ -15,11 +16,11 @@ async def listen_song(song_id: int, user_id: int = Depends(oauth2.require_user),
         .first()
     )
     if not song:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail="Song not found")
-    
+
     artist_id = song.artist_id
-    
+
     preference = (
         db.query(models.UserPreference)
         .filter(models.UserPreference.user_id == user_id, models.UserPreference.song_id == song_id)
@@ -31,7 +32,8 @@ async def listen_song(song_id: int, user_id: int = Depends(oauth2.require_user),
         preference.listened_at = text("now()")
     else:
         song.total_listeners += 1
-        preference = models.UserPreference(user_id=user_id, artist_id=artist_id, song_id=song_id, listen_count=1)
+        preference = models.UserPreference(
+            user_id=user_id, artist_id=artist_id, song_id=song_id, listen_count=1)
         db.add(preference)
 
     db.commit()

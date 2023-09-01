@@ -1,8 +1,8 @@
 import homeIcon from "../assets/home-icon.png";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
 import useLogout from "../hooks/useLogout";
-import { api } from "../api";
+import Search from "./Search";
+import { HiHome } from "react-icons/hi";
 
 const Navigation = () => {
   const navigateTo = useNavigate();
@@ -15,52 +15,35 @@ const Navigation = () => {
     navigateTo("/");
   };
 
-  const [query, setQuery] = useState("");
-  const [searchResult, setSearchResult] = useState({ artists: [], songs: [] });
-
-  useEffect(() => {
-    const fetchData = async (value) => {
-      try {
-        if (value) {
-          const response = await api.get(`/search?query=${value}`);
-          setSearchResult({
-            artists: response.data.artists,
-            songs: response.data.songs,
-          });
-          console.log(searchResult);
-        } else {
-          setSearchResult({ artists: [], songs: [] });
-        }
-      } catch (error) {
-        console.log(error.response);
-      }
-    };
-    const timeoutId = setTimeout(() => fetchData(query), 500);
-    return () => clearTimeout(timeoutId);
-  }, [query]);
-
   return (
-    <nav className="flex">
-      <img
-        className="object-contain h-16 w-16 bg-red-700 hover:bg-sky-700"
-        src={homeIcon}
-        alt="home-icon"
-        onClick={() => navigateTo("/")}
-      />
-      <input
-        className=""
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-      <div>
+    <nav className="grid grid-cols-3 items-center min-w-screen h-12 bg-slate-900 text-white">
+      <div className="justify-self-start">
+        <HiHome
+          className="fill-white cursor-pointer h-8 w-8 ml-2"
+          onClick={() => navigateTo("/")}
+        />
+      </div>
+      <div className="justify-self-auto h-10">
+        <Search />
+      </div>
+      <div className="justify-self-end mr-3">
         {profileName ? (
-          <div>
-            <p>{profileName}</p>
-            <button onClick={signOut}>Sign Out</button>
+          <div className="flex gap-2 items-center">
+            <p className="line-clamp-1 -lg:text-xs -md:hidden">{profileName}</p>
+            <button
+              className="border-2 border-gray-700 rounded-full bg-blue-600 px-4 py-1 hover:scale-110 transition-all duration-200 ease-in-out whitespace-nowrap truncate"
+              onClick={signOut}
+            >
+              Log out
+            </button>
           </div>
         ) : (
-          <button onClick={() => navigateTo("/login")}>Sign In</button>
+          <button
+            className="border-2 border-gray-700 rounded-full bg-blue-600 px-4 py-1 hover:scale-110 transition-all duration-200 ease-in-out whitespace-nowrap truncate"
+            onClick={() => navigateTo("/login")}
+          >
+            Log in
+          </button>
         )}
       </div>
     </nav>

@@ -103,9 +103,15 @@ const Register = () => {
       } else {
         setErrMsg("Registration Failed");
       }
-      errRef.current.focus();
     }
   };
+
+  useEffect(() => {
+    if (errMsg && errRef.current) {
+      errRef.current.focus();
+      errRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [errMsg]);
 
   const handleGoogleLogin = async () => {
     window.location.href = "http://localhost:8000/login/google";
@@ -120,7 +126,7 @@ const Register = () => {
   };
 
   return (
-    <div className="bg-slate-800 min-h-screen min-w-fit overflow-x-hidden text-white">
+    <div className="bg-slate-800 min-h-screen overflow-x-hidden text-white max-h-screen overflow-y-auto scrollbar-thin scrollbar-track-slate-800 scrollbar-thumb-slate-100">
       <div className="bg-slate-900 h-16 flex items-center">
         <Link to="/">
           <h1 className="text-3xl font-sans ml-8">🎤 Karakoke</h1>
@@ -134,7 +140,6 @@ const Register = () => {
           <div className="w-96 flex flex-col -sm:w-full">
             <div
               ref={errRef}
-              aria-live="assertive"
               className="flex items-center space-x-2 bg-red-600 mb-2 text-xl"
             >
               {errMsg ? (
@@ -168,8 +173,6 @@ const Register = () => {
                 onChange={(e) => setUser(e.target.value)}
                 value={user}
                 required
-                aria-invalid={validName ? "false" : "true"}
-                aria-describedby="uidnote"
                 onFocus={() => setUserFocus(true)}
                 onBlur={() => setUserFocus(false)}
               />
@@ -235,7 +238,11 @@ const Register = () => {
                   }
                 />
               </label>
-              <div className="flex justify-between items-center border-2 border-gray-700 rounded-md bg-slate-800 focus-within:border-white">
+              <div
+                className={`flex justify-between items-center border-2 border-gray-700 rounded-md bg-slate-800 ${
+                  pwdFocus ? "focus-within:border-white" : ""
+                }`}
+              >
                 <input
                   className="pl-2 h-12 border-0 bg-transparent w-full focus:outline-none focus:ring-0"
                   type={showPwd ? "text" : "password"}
@@ -244,12 +251,14 @@ const Register = () => {
                   onChange={(e) => setPwd(e.target.value)}
                   value={pwd}
                   required
-                  aria-invalid={validPwd ? "false" : "true"}
-                  aria-describedby="pwdnote"
                   onFocus={() => setPwdFocus(true)}
                   onBlur={() => setPwdFocus(false)}
                 />
-                <button type="button" className="px-3" onClick={toggleShowPwd}>
+                <button
+                  type="button"
+                  className="px-3 focus:outline-none focus:ring-0 custom-focus-border"
+                  onClick={toggleShowPwd}
+                >
                   {showPwd ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
@@ -296,8 +305,6 @@ const Register = () => {
                 onChange={(e) => setMatchPwd(e.target.value)}
                 value={matchPwd}
                 required
-                aria-invalid={validMatch ? "false" : "true"}
-                aria-describedby="confirmnote"
                 onFocus={() => setMatchFocus(true)}
                 onBlur={() => setMatchFocus(false)}
               />
