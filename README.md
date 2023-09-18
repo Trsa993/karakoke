@@ -89,16 +89,14 @@ VITE_BASE_URL=
 
 4. Run the application
 
-- Frontend
+- Build the Docker images:
 
 ```bash
-cd frontend
-npm start
+docker-compose build
 ```
 
-- Backend
+- Start the application:
 
 ```bash
-cd backend
-uvicorn app.main:app --reload
+docker-compose up
 ```
