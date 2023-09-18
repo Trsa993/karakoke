@@ -73,6 +73,18 @@ FACEBOOK_APP_ID=
 FACEBOOK_APP_SECRET=
 
 SECRET_KEY=
+
+LAST_FM_API_KEY=
+
+SECRET_KEY=
+
+BASE_DATA_PATH=
+```
+
+.env file for frontend:
+
+```bash
+VITE_BASE_URL=
 ```
 
 4. Run the application
