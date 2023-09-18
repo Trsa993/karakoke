@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useGlobalContext } from "../components/GlobalProvider";
 
 const useKeyPress = (targetKey) => {
   const [keyPressed, setKeyPressed] = useState(false);
+  const { isSearchFocused } = useGlobalContext();
 
   useEffect(() => {
     const downHandler = (event) => {
@@ -9,7 +11,7 @@ const useKeyPress = (targetKey) => {
         if (
           targetKey === "ArrowDown" ||
           targetKey === "ArrowUp" ||
-          targetKey === " "
+          (!isSearchFocused && targetKey === " ")
         ) {
           event.preventDefault();
         }
@@ -29,7 +31,7 @@ const useKeyPress = (targetKey) => {
       window.removeEventListener("keydown", downHandler);
       window.removeEventListener("keyup", upHandler);
     };
-  }, [targetKey]);
+  }, [targetKey, isSearchFocused]);
 
   return keyPressed;
 };

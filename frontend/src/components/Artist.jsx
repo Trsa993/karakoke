@@ -14,6 +14,7 @@ const Artist = ({ artist }) => {
           artist?.artist_image_small_path
         }`}
         alt={artist.artist}
+        loading="lazy"
       />
       <h3 className="w-full text-lg text-center line-clamp-2">
         {artist.artist}

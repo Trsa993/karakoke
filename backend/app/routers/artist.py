@@ -43,7 +43,7 @@ async def get_songs_by_artist(artist_id: int, offset: int = 0, limit: int = 50, 
                 "artist": artist.artist,
                 "api_key": settings.last_fm_api_key,
                 "format": "json"
-            })
+            }, timeout=10.0)
             data = response.json()
 
         summary = data.get("artist", {}).get("bio", {}).get("summary", {})

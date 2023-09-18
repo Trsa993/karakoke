@@ -7,6 +7,7 @@ import {
   BsFillVolumeDownFill,
   BsFillVolumeUpFill,
 } from "react-icons/bs";
+import CanvasDrawings from "./CanvasDrawings";
 import { useGlobalContext } from "./GlobalProvider";
 import useKeyPress from "../hooks/useKeyPress";
 
@@ -37,14 +38,6 @@ const Karaoke = ({ vocalsPath, noVocalsPath, textData, autoplay }) => {
   const noVocalsGain = useRef();
 
   const analyser = useRef();
-  const bufferLength = useRef();
-  const dataArray = useRef();
-  const fftSize = [1024, 2048];
-
-  let waveformAnimationFrameId;
-  let frequencyBarAnimationFrameId;
-
-  const canvasRef = useRef();
 
   const songProgress = useRef();
   const leftPress = useKeyPress("ArrowLeft");
@@ -77,11 +70,6 @@ const Karaoke = ({ vocalsPath, noVocalsPath, textData, autoplay }) => {
       .connect(analyser.current)
       .connect(noVocalsGain.current)
       .connect(audioContext.current.destination);
-
-    analyser.current.fftSize =
-      fftSize[Math.floor(Math.random() * fftSize.length)];
-    bufferLength.current = analyser.current.frequencyBinCount;
-    dataArray.current = new Uint8Array(bufferLength.current);
 
     vocals.current.addEventListener("ended", handleSongEnd);
     noVocals.current.addEventListener("ended", handleSongEnd);
@@ -121,12 +109,6 @@ const Karaoke = ({ vocalsPath, noVocalsPath, textData, autoplay }) => {
 
     noVocals.current.addEventListener("timeupdate", updateTime);
 
-    if (analyser.current.fftSize === 1024) {
-      drawFrequencyBar();
-    } else {
-      drawWaveform();
-    }
-
     return () => {
       setCurrentTime(0);
       setIsPlaying(false);
@@ -139,8 +121,6 @@ const Karaoke = ({ vocalsPath, noVocalsPath, textData, autoplay }) => {
       noVocals.current.removeEventListener("ended", handleSongEnd);
       noVocals.current.removeEventListener("timeupdate", updateTime);
       noVocals.current.removeEventListener("loadedmetadata", updateDuration);
-      cancelAnimationFrame(waveformAnimationFrameId);
-      cancelAnimationFrame(frequencyBarAnimationFrameId);
     };
   }, [vocalsPath, noVocalsPath, textData]);
 
@@ -188,76 +168,6 @@ const Karaoke = ({ vocalsPath, noVocalsPath, textData, autoplay }) => {
     setCurrentTime(newTime);
     vocals.current.currentTime = newTime;
     noVocals.current.currentTime = newTime;
-  };
-
-  const drawWaveform = () => {
-    waveformAnimationFrameId = requestAnimationFrame(drawWaveform);
-
-    analyser.current.getByteTimeDomainData(dataArray.current);
-
-    if (!canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const width = canvas.width;
-    const height = canvas.height;
-
-    ctx.fillStyle = "rgba(0, 0, 0, 0)";
-    ctx.fillRect(0, 0, width, height);
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
-    ctx.beginPath();
-
-    const sliceWidth = width / bufferLength.current;
-    let x = 0;
-
-    for (let i = 0; i < bufferLength.current; i++) {
-      const v = dataArray.current[i] / 128.0;
-      const y = (v * height) / 2;
-
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-
-      x += sliceWidth;
-    }
-
-    ctx.lineTo(canvas.width, canvas.height / 2);
-    ctx.stroke();
-  };
-
-  const drawFrequencyBar = () => {
-    frequencyBarAnimationFrameId = requestAnimationFrame(drawFrequencyBar);
-
-    analyser.current.getByteFrequencyData(dataArray.current);
-
-    if (!canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const width = canvas.width;
-    const height = canvas.height;
-
-    ctx.fillStyle = "rgba(0, 0, 0, 0)";
-    ctx.fillRect(0, 0, width, height);
-
-    const barWidth = (width / bufferLength.current) * 2.5;
-    let barHeight;
-
-    let x = 0;
-
-    for (let i = 0; i < bufferLength.current; i++) {
-      barHeight = dataArray.current[i];
-
-      ctx.fillStyle = `rgba(${barHeight + 100}, 255, 255, 0.7)`;
-      ctx.fillRect(x, height - barHeight / 2, barWidth, barHeight);
-
-      x += barWidth + 1;
-    }
   };
 
   useEffect(() => {
@@ -327,7 +237,7 @@ const Karaoke = ({ vocalsPath, noVocalsPath, textData, autoplay }) => {
 
   return (
     <div className="flex flex-col gap-2 w-10/12">
-      <canvas ref={canvasRef} width="800" height="100"></canvas>
+      <CanvasDrawings analyser={analyser} noVocalsPath={noVocalsPath} />
       <div className="h-32 pb-10 pt-5">
         {currentSegmentIndex !== -1 && (
           <div className="flex gap-2 justify-center items-center">

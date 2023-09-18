@@ -1,4 +1,3 @@
-import homeIcon from "../assets/home-icon.png";
 import { useNavigate } from "react-router-dom";
 import useLogout from "../hooks/useLogout";
 import Search from "./Search";

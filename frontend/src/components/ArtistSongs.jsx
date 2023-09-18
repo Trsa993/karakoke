@@ -3,11 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { BsPlayFill } from "react-icons/bs";
 import { FaGreaterThan, FaLessThan } from "react-icons/fa";
+import spinner from "../assets/spinner.svg";
 
 import DOMPurify from "dompurify";
 
 const ArtistSongs = () => {
   const { artistId } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const [songs, setSongs] = useState([]);
   const [offset, setOffset] = useState(0);
   const [shouldScroll, setShouldScroll] = useState(false);
@@ -31,10 +34,12 @@ const ArtistSongs = () => {
       } catch (error) {
         if (error.name === "AbortError") {
           console.log("Aborted");
-        } else {
+        } else if (error.response) {
           console.log(error.response);
+          setIsError(true);
         }
       }
+      setIsLoading(false);
     };
     fetchData();
     return () => {
@@ -43,8 +48,8 @@ const ArtistSongs = () => {
   }, [artistId, offset]);
 
   useEffect(() => {
-    songsRef.current.focus();
-  }, []);
+    songsRef?.current?.focus();
+  }, [isLoading]);
 
   useEffect(() => {
     if (shouldScroll) {
@@ -56,6 +61,16 @@ const ArtistSongs = () => {
     }
   }, [offset, shouldScroll]);
 
+  if (isLoading) {
+    return (
+      <div className="rounded-md w-full h-screen bg-slate-900 overflow-x-hidden flex flex-col text-white justify-center items-center">
+        <img className="w-16 h-16" src={spinner} alt="Loading..." />
+      </div>
+    );
+  }
+  if (isError) {
+    return <h2>There was an error</h2>;
+  }
   return (
     <div
       className="rounded-md w-full max-h-screen bg-slate-900

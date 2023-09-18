@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Song from "./Song";
 import Artist from "./Artist";
 import useApiPrivate from "../hooks/useApiPrivate";
+import spinner from "../assets/spinner.svg";
 
 const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +26,7 @@ const Home = () => {
       } catch (error) {
         if (error.name === "AbortError") {
           console.log("Aborted");
-        } else {
+        } else if (error.response) {
           console.log(error.response);
           setIsError(true);
         }
@@ -36,7 +37,11 @@ const Home = () => {
   }, [profileName]);
 
   if (isLoading) {
-    return <h2>Loading...</h2>;
+    return (
+      <div className="rounded-md w-full h-screen bg-slate-900 overflow-x-hidden flex flex-col text-white justify-center items-center">
+        <img className="w-16 h-16" src={spinner} alt="Loading..." />
+      </div>
+    );
   }
   if (isError) {
     return <h2>There was an error</h2>;
