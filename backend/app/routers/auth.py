@@ -7,6 +7,8 @@ from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
+from uuid import UUID
+
 from .. import models, oauth2, utils
 from ..config import settings
 from ..database import get_db
@@ -211,7 +213,7 @@ def refresh_token(Authorize: oauth2.AuthJWT = Depends(), db: Session = Depends(g
 
 
 @router.get("/logout")
-def logout(request: Request, Authorize: oauth2.AuthJWT = Depends(), user_id: int = Depends(oauth2.require_user)):
+def logout(request: Request, Authorize: oauth2.AuthJWT = Depends(), user_id: UUID = Depends(oauth2.require_user)):
 
     Authorize.jwt_required()
 

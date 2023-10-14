@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import desc, func, text
 from sqlalchemy.orm import Session
 
+from uuid import UUID
+
 from .. import models, oauth2, schemas
 from ..database import get_db
 
@@ -9,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/home", response_model=schemas.HomeOut)
-async def home(user_id: int = Depends(oauth2.require_user), db: Session = Depends(get_db)):
+async def home(user_id: UUID = Depends(oauth2.require_user), db: Session = Depends(get_db)):
     latest_songs = (
         db.query(models.Song)
         .join(models.UserPreference, models.Song.id == models.UserPreference.song_id, isouter=True)
@@ -58,7 +60,7 @@ async def home(user_id: int = Depends(oauth2.require_user), db: Session = Depend
         .filter(models.UserPreference.user_id == user_id)
         .filter(~models.Artist.id.in_([artist.id for artist in latest_artists]))
         .group_by(models.Artist.id)
-        .order_by(func.sum(models.UserPreference.song_id).desc())
+        .order_by(func.sum(models.UserPreference.listen_count).desc())
         .limit(40)
         .with_entities(models.Artist)
         .all()

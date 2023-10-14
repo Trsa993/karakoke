@@ -50,6 +50,7 @@ services:
       - name=value
     volumes:
       - postgres-db:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d
   redis-cache:
     image: redis:latest
     restart: on-failure

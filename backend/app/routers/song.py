@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import text
 
+from uuid import UUID
+
 from .. import models, oauth2, schemas
 from ..database import get_db
 
@@ -9,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/songs/{song_id}/listen", response_model=schemas.SongOut)
-async def listen_song(song_id: int, user_id: int = Depends(oauth2.require_user), db: Session = Depends(get_db)):
+async def listen_song(song_id: UUID, user_id: UUID = Depends(oauth2.require_user), db: Session = Depends(get_db)):
     song = (
         db.query(models.Song)
         .filter(models.Song.id == song_id)

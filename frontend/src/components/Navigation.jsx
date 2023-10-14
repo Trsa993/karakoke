@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import useLogout from "../hooks/useLogout";
 import Search from "./Search";
 import { HiHome } from "react-icons/hi";
@@ -6,6 +6,7 @@ import { HiHome } from "react-icons/hi";
 const Navigation = () => {
   const navigateTo = useNavigate();
   const logout = useLogout();
+  const location = useLocation();
 
   const profileName = localStorage.getItem("profileName");
 
@@ -39,7 +40,7 @@ const Navigation = () => {
         ) : (
           <button
             className="border-2 border-gray-700 rounded-full bg-blue-600 px-4 py-1 hover:scale-110 transition-all duration-200 ease-in-out whitespace-nowrap truncate"
-            onClick={() => navigateTo("/login")}
+            onClick={() => navigateTo("/login", { state: { from: location } })}
           >
             Log in
           </button>

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useGlobalContext } from "./GlobalProvider";
-import { useNavigate, useLocation, Navigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const OAuthRedirectHandler = () => {
   const { setAuth } = useGlobalContext();
@@ -8,6 +8,7 @@ const OAuthRedirectHandler = () => {
   const location = useLocation();
 
   const from = location.state?.from?.pathname || "/";
+  console.log(from);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);

@@ -1,7 +1,10 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
+
+import uuid
 
 from .database import Base
 
@@ -9,7 +12,8 @@ from .database import Base
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True,
+                default=uuid.uuid4, unique=True, nullable=False)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=True)
     profile_name = Column(String, nullable=False)
@@ -22,7 +26,8 @@ class User(Base):
 class Artist(Base):
     __tablename__ = "artists"
 
-    id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True,
+                default=uuid.uuid4, unique=True, nullable=False)
     artist = Column(String, nullable=False, unique=True)
     artist_image_large_path = Column(String, nullable=False, unique=True)
     artist_image_medium_path = Column(String, nullable=True, unique=True)
@@ -34,8 +39,9 @@ class Artist(Base):
 class Song(Base):
     __tablename__ = "songs"
 
-    id = Column(Integer, primary_key=True, nullable=False)
-    artist_id = Column(Integer, ForeignKey(
+    id = Column(UUID(as_uuid=True), primary_key=True,
+                default=uuid.uuid4, unique=True, nullable=False)
+    artist_id = Column(UUID(as_uuid=True), ForeignKey(
         "artists.id", ondelete="CASCADE"), nullable=False)
     title = Column(String, nullable=False)
     vocals_path = Column(String, nullable=False, unique=True)
@@ -51,10 +57,14 @@ class Song(Base):
 class UserPreference(Base):
     __tablename__ = "user_preferences"
 
-    id = Column(Integer, primary_key=True, nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
-    artist_id = Column(Integer, ForeignKey("artists.id", ondelete="CASCADE"))
-    song_id = Column(Integer, ForeignKey("songs.id", ondelete="CASCADE"))
+    id = Column(UUID(as_uuid=True), primary_key=True,
+                default=uuid.uuid4, unique=True, nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey(
+        "users.id", ondelete="CASCADE"))
+    artist_id = Column(UUID(as_uuid=True), ForeignKey(
+        "artists.id", ondelete="CASCADE"))
+    song_id = Column(UUID(as_uuid=True), ForeignKey(
+        "songs.id", ondelete="CASCADE"))
     listen_count = Column(Integer, nullable=False, default=0)
     listened_at = Column(TIMESTAMP(timezone=True),
                          nullable=False, server_default=text("now()"))

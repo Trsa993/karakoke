@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from uuid import UUID
 
 import redis.asyncio as redis
 import httpx
@@ -14,7 +15,7 @@ router = APIRouter()
 
 
 @router.get("/artists/{artist_id}/songs", response_model=schemas.ArtistOut)
-async def get_songs_by_artist(artist_id: int, offset: int = 0, limit: int = 50, db: Session = Depends(get_db), cache: redis.Redis = Depends(get_redis)):
+async def get_songs_by_artist(artist_id: UUID, offset: int = 0, limit: int = 50, db: Session = Depends(get_db), cache: redis.Redis = Depends(get_redis)):
     artist = (
         db.query(models.Artist)
         .filter(models.Artist.id == artist_id)

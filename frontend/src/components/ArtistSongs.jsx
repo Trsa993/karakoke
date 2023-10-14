@@ -56,7 +56,7 @@ const ArtistSongs = () => {
       const timer = setTimeout(() => {
         songsRef.current.scrollIntoView({ behavior: "smooth" });
         setShouldScroll(false);
-      }, 100);
+      }, 200);
       return () => clearTimeout(timer);
     }
   }, [offset, shouldScroll]);

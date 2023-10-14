@@ -9,6 +9,8 @@ import RequireAuth from "./components/RequireAuth";
 import PersistLogin from "./components/PersistLogin";
 import AleradyAuth from "./components/AlreadyAuth";
 import OAuthRedirectHandler from "./components/OAuthRedirectHandler";
+import Vortex from "./components/Vortex";
+import Canvas3D from "./components/Canvas3D";
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
             <Route element={<RequireAuth />}>
               <Route path="/songs/:songId" element={<KaraokeScreen />} />
             </Route>
+            <Route path="/test" element={<Canvas3D />} />
           </Route>
         </Route>
         <Route path="/oauth-recall" element={<OAuthRedirectHandler />} />

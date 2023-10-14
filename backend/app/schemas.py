@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List, Optional
+from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, constr
 
@@ -12,7 +13,7 @@ class UserCreate(BaseModel):
 
 
 class UserOut(BaseModel):
-    id: int
+    id: UUID
     email: EmailStr
     profile_name: str
     created_at: datetime
@@ -37,7 +38,7 @@ class ArtistBase(BaseModel):
 
 
 class Artist(ArtistBase):
-    id: int
+    id: UUID
 
     class Config:
         orm_mode = True
@@ -45,7 +46,7 @@ class Artist(ArtistBase):
 
 class SongBase(BaseModel):
     title: str
-    artist_id: str
+    artist_id: UUID
     vocals_path: str
     accompaniments_path: str
     text_path: str
@@ -57,7 +58,7 @@ class SongBase(BaseModel):
 
 
 class Song(SongBase):
-    id: int
+    id: UUID
 
     class Config:
         orm_mode = True
