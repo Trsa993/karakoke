@@ -9,31 +9,39 @@ import RequireAuth from "./components/RequireAuth";
 import PersistLogin from "./components/PersistLogin";
 import AleradyAuth from "./components/AlreadyAuth";
 import OAuthRedirectHandler from "./components/OAuthRedirectHandler";
-import Vortex from "./components/Vortex";
 import Canvas3D from "./components/Canvas3D";
 
 function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route element={<PersistLogin />}>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/artists/:artistId" element={<ArtistSongs />} />
-            <Route element={<RequireAuth />}>
-              <Route path="/songs/:songId" element={<KaraokeScreen />} />
-            </Route>
-            <Route path="/test" element={<Canvas3D />} />
-          </Route>
-        </Route>
-        <Route path="/oauth-recall" element={<OAuthRedirectHandler />} />
-        <Route element={<AleradyAuth />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-        </Route>
-      </Routes>
-    </Router>
-  );
+    return (
+        <Router>
+            <Routes>
+                <Route element={<PersistLogin />}>
+                    <Route element={<Layout />}>
+                        <Route path="/" element={<Home />} />
+                        <Route
+                            path="/artists/:artistId"
+                            element={<ArtistSongs />}
+                        />
+                        <Route path="/test" element={<Canvas3D />} />
+                        <Route element={<RequireAuth />}>
+                            <Route
+                                path="/songs/:songId"
+                                element={<KaraokeScreen />}
+                            />
+                        </Route>
+                    </Route>
+                </Route>
+                <Route
+                    path="/oauth-recall"
+                    element={<OAuthRedirectHandler />}
+                />
+                <Route element={<AleradyAuth />}>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                </Route>
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;

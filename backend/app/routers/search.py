@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
-from .. import models, oauth2, schemas
+from .. import models, schemas
 from ..database import get_db
 
 router = APIRouter()

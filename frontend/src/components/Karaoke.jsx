@@ -240,25 +240,19 @@ const Karaoke = ({ vocalsPath, noVocalsPath, textData, autoplay }) => {
       <CanvasDrawings analyser={analyser} noVocalsPath={noVocalsPath} />
       <div className="h-32 pb-10 pt-5">
         {currentSegmentIndex !== -1 && (
-          <div className="flex flex-wrap gap-x-2 justify-center items-center">
+          <p style={{ whiteSpace: "pre-line" }} className="text-center">
             {textData.segments[currentSegmentIndex].words.map((word, index) => {
-              const processedWord =
-                word.text !== "I" &&
-                !word.text.startsWith("I'") &&
-                /[A-Z]/.test(word.text)
-                  ? `\n${word.text}`
-                  : word.text;
               return (
                 <span
                   className="text-3xl -md:text-lg -sm:text-sm"
                   key={index}
                   style={{ color: index <= currentWordIndex ? "red" : "white" }}
                 >
-                  {processedWord}
+                  {word.text}
                 </span>
               );
             })}
-          </div>
+          </p>
         )}
       </div>
       <div className="flex justify-end mb-16">

@@ -2,10 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
+from fastapi.responses import ORJSONResponse
 from .routers import artist, auth, home, search, song, user, update_db
 from .config import settings
 
-app = FastAPI()
+app = FastAPI(default_response_class=ORJSONResponse)
 
 origins = ["http://localhost:3000"]
 
