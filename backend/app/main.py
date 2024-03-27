@@ -20,7 +20,6 @@ app.add_middleware(
 
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 
-
 app.include_router(artist.router)
 app.include_router(auth.router)
 app.include_router(home.router)
